@@ -13,22 +13,34 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 
-client.connect(err => {
-    const collection = client.db("test").collection("devices");
-    // perform actions on the collection object
-    client.close();
-});
+
 
 async function run() {
     try {
         await client.connect();
-        const todosCollections = client.db("emajohn").collection('to-do');
-        console.log('DB connected');
+        const todosCollections = client.db("emajohn").collection("todos");
+
+        //Post Todo
+        app.post('/todo', async (req, res) => {
+            const newTodo = req.body
+            const addTodo = await todosCollections.insertOne(newTodo);
+            res.send(addTodo);
+        });
+
+        //Get Todo
+        app.get('/todo', async (req, res) => {
+            const query = {};
+            const cursor = todosCollections.find(query);
+            const todos = await cursor.toArray();
+            res.send(todos);
+        });
     }
     finally {
 
     }
 };
+
+
 
 
 
