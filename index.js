@@ -18,6 +18,7 @@ async function run() {
     try {
         await client.connect();
         const todosCollections = client.db("emajohn").collection("todos");
+        const userCollections = client.db("emajohn").collection("users");
 
         //Post Todo
         app.post('/todo', async (req, res) => {
@@ -26,7 +27,7 @@ async function run() {
             res.send(addTodo);
         });
 
-        //Get Todo
+        //Get Todos
         app.get('/todo', async (req, res) => {
             const query = {};
             const cursor = todosCollections.find(query);
@@ -34,13 +35,21 @@ async function run() {
             res.send(todos);
         });
 
-        //DELETE
+        //DELETE todo
         app.delete('/todo/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const deleteItem = await todosCollections.deleteOne(query);
             res.send(deleteItem);
         });
+
+        //Post User
+        app.post('/user', async (req, res) => {
+            const newUser = req.body
+            const addUser = await userCollections.insertOne(newUser);
+            res.send(addUser);
+        });
+
 
     }
     finally {
